@@ -1,0 +1,53 @@
+.ant-layout-sider {
+  margin-bottom: 0;
+}
+:host ::ng-deep .ant-menu-inline .ant-menu-submenu-title {
+  font-size: 16px ;
+}
+li .ant-menu-item-selected {
+  background: #feae45;
+}
+.ant-menu-submenu-active,
+.ant-menu-submenu-title:hover {
+  color: #fff;
+}
+.logo {
+  background: #FF9933;
+}
+:host ::ng-deep .ant-layout-sider-children {
+  background: #FF6347;
+}
+ul {
+  background: #FF9933;
+  color: #fff;
+}
+ul li a {
+  color: #fff;
+}
+ul li div i {
+  color: #fff !important;
+}
+.ant-menu-vertical .ant-menu-item:not(:last-child),
+.ant-menu-vertical-left .ant-menu-item:not(:last-child),
+.ant-menu-vertical-right .ant-menu-item:not(:last-child),
+.ant-menu-inline .ant-menu-item:not(:last-child) {
+  margin-bottom: 0;
+}
+.ant-menu-vertical .ant-menu-item,
+.ant-menu-vertical-left .ant-menu-item,
+.ant-menu-vertical-right .ant-menu-item,
+.ant-menu-inline .ant-menu-item,
+.ant-menu-vertical .ant-menu-submenu-title,
+.ant-menu-vertical-left .ant-menu-submenu-title,
+.ant-menu-vertical-right .ant-menu-submenu-title,
+.ant-menu-inline .ant-menu-submenu-title {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+ul .ant-menu-item-selected {
+  border-right: 0;
+  color: #fff;
+}
+:host ::ng-deep .ant-menu-submenu-title:hover {
+  color: #fff;
+}

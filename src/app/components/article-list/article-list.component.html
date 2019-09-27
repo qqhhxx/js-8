@@ -1,0 +1,132 @@
+<div class="searchForm">
+  <div nz-row>
+    <div nz-col nzSpan="4"> <label class="r mr10 h32">发布时间</label></div>
+    <div nz-col nzSpan="4" class="start">
+      <nz-date-picker [nzDisabledDate]="disabledStartDate" nzShowTime nzFormat="yyyy-MM-dd HH:mm:ss"
+        [(ngModel)]="startValue" nzPlaceHolder="Start" (ngModelChange)="onStartChange($event)"
+        (nzOnOpenChange)="handleStartOpenChange($event)" >
+      </nz-date-picker>
+
+    </div>
+    <div nz-col nzSpan="4">
+      <div class="tam"><i nz-icon [nzType]="'minus'"></i></div>
+    </div>
+    <div nz-col nzSpan="4" class="end">
+      <nz-date-picker [nzDisabledDate]="disabledEndDate" nzShowTime nzFormat="yyyy-MM-dd HH:mm:ss"
+        [(ngModel)]="endValue" nzPlaceHolder="End" [nzOpen]="endOpen" (ngModelChange)="onEndChange($event)"
+        (nzOnOpenChange)="handleEndOpenChange($event)">
+      </nz-date-picker>
+
+    </div>
+    <div nz-col nzSpan="4"><label for="type" class="r mr10 h32">类型</label></div>
+    <div nz-col nzSpan="4"> <select id="type" name="type" [(ngModel)]="typeItem" class="w100 nzstyle">
+        <option value="">请选择</option>
+        <option *ngFor="let item of typelist" [value]='item.id'>{{item.type}}</option>
+      </select></div>
+  </div>
+
+<!-- 
+  <div>
+
+      <nz-range-picker [nzFormat]="dateFormat"  [ngStyle]="currentStyles"></nz-range-picker>
+
+  </div> -->
+
+
+  
+
+
+
+
+  <div nz-row>
+    <div nz-col nzSpan="4"><label class="r mr10 h32">状态</label></div>
+    <div nz-col nzSpan="4">
+      <div>
+        <select id="status" name="status" [(ngModel)]="statusItem" class="w100 nzstyle">
+          <option *ngFor="let item of statuslist" [value]='item.id'>{{item.type}}</option>
+        </select>
+
+      </div>
+
+    </div>
+    <div nz-col nzSpan="4"></div>
+    <div nz-col nzSpan="4"></div>
+    <div nz-col nzSpan="4"></div>
+    <div nz-col nzSpan="4"></div>
+  </div>
+
+  <div nz-row>
+    <div class="button-right">
+
+      <button nz-button nzType="primary" (click)="search()" class="search-button">
+        搜索
+      </button>
+      <button nz-button nzType="primary" (click)="clear()" class="clear-button">
+        清空
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="list">
+  <div class="list-top">
+    <span>article管&ensp; &ensp;&ensp; &ensp;理</span>
+
+
+    <button nz-button [nzSize]="size" class="add">
+      <a routerLink="../add-article">新增</a>
+    </button>
+
+  </div>
+  <div class="table">
+    <table>
+      <thead>
+        <tr>
+          <th width="50">序号</th>
+          <th width="50">图片</th>
+          <th width="50">标题</th>
+          <th width="50">类型</th>
+          <th width="50">创建者</th>
+          <th width="50">创建时间</th>
+          <th width="50">修改时间</th>
+          <th width="50">状态</th>
+          <th width="50">操作</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let data of listOfData ; let i=index " [style.background]="i%2===0 ? '#f5f5f5': '#fff'">
+
+          <td class="first-cell" width="50">
+            {{i+1 }}
+          </td>
+
+          <td width="60">
+            <img src="{{data.img}}" alt="777" height="50" width="50">
+          </td>
+          <td width="50">{{ data.title }}</td>
+          <td width="50">{{ data.type | types }}</td>
+
+          <td width="50">{{ data.author }}</td>
+
+          <td width="50">{{ data.createAt  | date:"yyyy-MM-dd \n HH:mm:ss" }}</td>
+          <td width="50">{{ data.updateAt  | date:"yyyy-MM-dd \n HH:mm:ss"  }}</td>
+          <td width="50">{{ data.status | statusP  }}</td>
+          <td>
+            <button nz-button nzType="default" (click)="offline(i)" [style.background]="i%2===0 ? '#f5f5f5': '#fff'">
+              下线
+            </button>
+            <a routerLink="../edit/{{data.id}}" class="editlink">编辑</a>
+            <button nz-button nzType="default" (click)="delete(i)" [style.background]="i%2===0 ? '#f5f5f5': '#fff'">
+              删除
+            </button>
+          </td>
+
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+</div>
+
+<nz-pagination [(nzPageIndex)]="pageindex" [(nzPageSize)]="pagesize" [(nzTotal)]="total" [nzShowQuickJumper]="false"
+  (click)="getdata($event)"></nz-pagination>

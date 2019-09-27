@@ -1,0 +1,22 @@
+
+
+<div class="login">
+       
+            <form [formGroup]="loginForm" >
+                <h1>萝卜多后台登录</h1>
+                <div class="userbox">
+                    <i nz-icon nzType="user" nzTheme="outline"></i>
+                    <input type="text" placeholder="请输入账号" id="username" formControlName="username">
+                </div>
+                <div class="passwordbox">
+                     <i nz-icon nzType="lock" nzTheme="outline"></i>
+                    <input type="password" placeholder="请输入密码" id="password" formControlName="password">
+                </div>
+                <div class="submitbox">
+                    <input type="submit" value="登 录" (click)="login2()" id="submit">
+                </div>
+            
+            </form>
+           
+
+</div>

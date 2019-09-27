@@ -1,0 +1,176 @@
+<div class="edit">
+  <div class="topline">编辑</div>
+
+  <form name="fileinfo" id="fileinfo">
+    <div nz-row class="h50">
+      <div nz-col nzSpan="4" class="ta">
+        <label>标题名称:</label>
+      </div>
+      <div nz-col nzSpan="16">
+        <input nz-input [(ngModel)]="title" name="title">
+      </div>
+      <div nz-col nzSpan="4"></div>
+    </div>
+
+
+
+
+
+    <div nz-row class="h50">
+      <div nz-col nzSpan="4" class="ta">
+        <label for="type">类型:</label>
+      </div>
+      <div nz-col nzSpan="16">
+
+        <select id="type" name="type" [(ngModel)]="type">
+          <option value="">请选择</option>
+
+          <option *ngFor="let item of typelist" [value]='item.id'>{{item.type}}</option>
+        </select>
+        <select  *ngIf="type==3" id="industry" name="industry" [(ngModel)]="industry" >
+          <option value="">请选择</option>
+
+          <option *ngFor="let item of industrylist" [value]='item.id'>{{item.industry}}</option>
+        </select>
+      </div>
+      <div nz-col nzSpan="4"></div>
+    </div>
+
+
+
+    <div nz-row class="h50">
+      <div nz-col nzSpan="4" class="ta">
+        <label>说明:</label>
+      </div>
+      <div nz-col nzSpan="16">
+        <input nz-input [(ngModel)]="content" name="content">
+      </div>
+      <div nz-col nzSpan="4"></div>
+    </div>
+
+
+
+
+    <div nz-row class="h50">
+      <div nz-col nzSpan="4" class="ta">
+        <label>跳转链接:</label>
+      </div>
+      <div nz-col nzSpan="16">
+        <input nz-input [(ngModel)]="link" name="link">
+      </div>
+      <div nz-col nzSpan="4"></div>
+    </div>
+
+    <input type="file" required id="fileElem" accept="image/*" style="display: none" (change)="handleFileInput($event)">
+
+    <div nz-row class="h50">
+      <div nz-col nzSpan="4" class="ta">
+        <label>配图:</label>
+      </div>
+      <div nz-col nzSpan="16" id="picture">
+
+        <button nz-button nzType="primary" id="fileSelect" (click)="choose()">
+          选择文件
+        </button>
+
+      </div>
+      <div nz-col nzSpan="4"></div>
+    </div>
+
+    <div nz-row class="h150">
+      <div nz-col nzSpan="4" class="ta">
+
+      </div>
+      <div nz-col nzSpan="16" id="picture">
+        <img src="{{src}}" alt="image"  id="preview">
+      </div>
+      <div nz-col nzSpan="4"></div>
+    </div>
+
+
+
+    <div nz-row class="h150">
+      <div nz-col nzSpan="4"></div>
+      <div nz-col nzSpan="16">
+        <div class="progress" *ngIf="ischoosed">
+          <table>
+            <thead>
+              <tr>
+                <th style="width: 180px">文件名</th>
+                <th>文件大小</th>
+                <th style="width: 180px">进度</th>
+                <th>操作</th>
+                <th>操作</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr >
+                <td>{{fileToUpload.name}}</td>
+
+                <!-- <ng-template #other_content>
+                  <td></td>
+                </ng-template>  -->
+
+                <td>
+                  {{(fileToUpload.size/1024/1024).toFixed(3)+'MB'}}
+                </td>
+
+                <!--   <ng-template #other_content2>
+                  <td></td>
+                </ng-template>-->
+
+                <td class="progress-td">
+                  <div class="progree-outside">
+                    <div class="progress-item"></div>
+                  </div>
+                </td>
+                <td>
+                  <i nz-icon [nzType]="'check'" *ngIf="isloaded"></i>
+                </td>
+                <td>
+
+                  <button nz-button [nzSize]="small" class="green-button mr20 mt10 small" (click)="postimage()">
+                    <i nz-icon [nzType]="'upload'"></i>
+                    上传
+                  </button>
+
+                  <button nz-button class="red-button mt10 delete small" [nzSize]="small">
+                    <i nz-icon [nzType]="'delete'"></i>
+                    删除
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+
+        </div>
+
+      </div>
+      <div nz-col nzSpan="4"></div>
+    </div>
+
+    <div nz-row class="h50">
+      <div nz-col nzSpan="4" class="ta">
+
+      </div>
+      <div nz-col nzSpan="16">
+        <div class="status">
+          <button nz-button nzType="primary" (click)="status1()" class="green-button mr10">
+            立即上线
+          </button>
+          <button nz-button nzType="primary" (click)="status2()" class="green-button">
+            存为草稿
+          </button>
+          <button nz-button nzType="primary" class="cancel" class="white-button r">
+            取消
+          </button>
+
+        </div>
+
+      </div>
+      <div nz-col nzSpan="4"></div>
+    </div>
+
+
+  </form>
+</div>

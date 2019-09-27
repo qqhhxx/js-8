@@ -1,0 +1,73 @@
+
+
+<form enctype="multipart/form-data" method="post" name="fileinfo" id="fileinfo"  [formGroup]="editForm" >
+  <label>类型:</label>
+ <input type="text" name="type" size="12" maxlength="32"  formControlName="type">
+ <br>
+ <label>标题名称:</label>
+ <input type="text" name="title" size="12" maxlength="32"  formControlName="title">
+ <br>
+ <label>跳转链接:</label>
+ <input type="text" name="url" size="12" maxlength="32"  formControlName="url">
+ <br> 
+ <input type="file"  required id="fileElem" accept="image/*" style="display: none"
+   (change)="handleFileInput($event)">
+ <div>
+   <label>配图</label>
+   <button nz-button nzType="primary" id="fileSelect" (click)="choose()">
+     选择文件
+   </button>
+ </div>
+
+</form>
+
+
+
+<div class="progress">
+ <table>
+   <thead>
+     <tr>
+       <th style="width: 180px">文件名</th>
+       <th>文件大小</th>
+       <th style="width: 180px">进度</th>
+       <th>操作</th>
+       <th>操作</th>
+     </tr>
+   </thead>
+   <tbody>
+     <tr>
+       <td *ngIf="fileToUpload ; else other_content">{{fileToUpload.name}}</td>
+       <ng-template #other_content>
+         <td></td>
+       </ng-template>
+       <td *ngIf="fileToUpload ; else other_content2">{{(fileToUpload.size/1024/1024).toFixed(3)+'MB'}}</td>
+       <ng-template #other_content2>
+         <td></td>
+       </ng-template>
+       <td><div class="progress-item"></div><span class="progress-number"></span></td>
+       <td>
+         <button class="b0" (click)="postimage()">
+           上传
+         </button>
+       </td>
+       <td>
+         <button class="b0">删除</button>
+       </td>
+     </tr>
+   </tbody>
+ </table>
+
+</div>
+
+<div>
+ <button nz-button nzType="primary" (click)="online()">
+   立即上线
+ </button>
+ <button nz-button nzType="primary">
+   存为草稿
+ </button>
+ <button nz-button nzType="primary">
+   取消
+ </button>
+
+
