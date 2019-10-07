@@ -1,4 +1,4 @@
-import { Component, OnInit, AfterViewChecked } from '@angular/core';
+import { Component, OnInit, DoCheck } from '@angular/core';
 import { DataService } from '../../services/data.service';
 import { HttpClient } from '@angular/common/http';
 import { HttpParams, HttpHeaders } from '@angular/common/http';
@@ -8,7 +8,8 @@ import { Injectable } from '@angular/core';
 import { Router, ActivatedRoute, ParamMap, NavigationExtras } from '@angular/router';
 import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { FormsModule } from '@angular/forms';
-import { ElementRef} from '@angular/core';
+import { ElementRef } from '@angular/core';
+import { analyzeAndValidateNgModules } from '@angular/compiler';
 
 
 @Component({
@@ -16,7 +17,7 @@ import { ElementRef} from '@angular/core';
   templateUrl: './article-list.component.html',
   styleUrls: ['./article-list.component.less']
 })
-export class ArticleListComponent implements OnInit {
+export class ArticleListComponent implements OnInit, DoCheck {
 
   typelist = [{ type: '全部', id: '' },
   { type: '首页Banner', id: 0 }, { type: '找职位Banner', id: 1 }, { type: '找精英Banner', id: 2 }, { type: '行业大图', id: 3 }];
@@ -29,24 +30,25 @@ export class ArticleListComponent implements OnInit {
   listOfData = [];
   param: any;
   title: string;
-  pageindex = '1';
+  pageindex :string;
+  oldPageindex: string;
+  counts: number = 0;
   pagesize = 10;
   total = 300;
-  bgo =true;
+  bgo = true;
 
   currentStyles = {
-   'background':"orange",
-   'font-size':"55px"
+    'background': "orange",
+    'font-size': "55px"
   };
 
   // something about nz-date-picker
 
   startValue: Date | null = null;
   endValue: Date | null = null;
- 
+
   //日期选择面板隐藏
   endOpen = false;
-
   start = null;
   end = null;
 
@@ -66,7 +68,7 @@ export class ArticleListComponent implements OnInit {
 
   onStartChange(date: Date): void {
     this.startValue = date;
-   
+
   }
 
   onEndChange(date: Date): void {
@@ -75,7 +77,7 @@ export class ArticleListComponent implements OnInit {
 
   handleStartOpenChange(open: boolean): void {
     if (!open) {
-      
+
       this.endOpen = true;
     }
     console.log('handleStartOpenChange', open, this.endOpen);
@@ -88,19 +90,19 @@ export class ArticleListComponent implements OnInit {
 
 
   constructor(private dataservice: DataService, private http: HttpClient,
-    private router: Router, private el:ElementRef) { }
+    private router: Router, private el: ElementRef) { }
 
-//跳转到编辑页（带参数）
-  goedit(i) {
+  //跳转到编辑页（带参数）
+ /*  goedit(i) {
     let navigationExtras: NavigationExtras = {
       queryParams: { id: this.listOfData[i].id }
     };
     this.router.navigate(['../edit/'], navigationExtras);
 
-  }
+  } */
 
 
-//下线功能
+  //下线功能
   offline(i) {
     const u = this.listOfData[i].id;
     console.log(typeof (u));
@@ -109,7 +111,7 @@ export class ArticleListComponent implements OnInit {
     ajax.put(url, { "id": u, "status": 1 })
       .subscribe(val => {
         console.log("Put call successful value returned in body", val);
-        this.thispage();
+        this.getdata();
 
       },
         error => {
@@ -131,7 +133,7 @@ export class ArticleListComponent implements OnInit {
     ajax.delete(url)
       .subscribe(val => {
         console.log("Delet call successful value returned in body", val);
-        this.thispage();
+        this.getdata();
         //this.listOfData.splice(i, 1);
       },
         error => {
@@ -144,9 +146,10 @@ export class ArticleListComponent implements OnInit {
 
   //根据页数，获得article列表
 
-  getdata(event: any) {
-    console.log(event);
-    this.pageindex = event.target.innerHTML;
+  getdata() {
+
+    console.log("pageindex:" + this.pageindex);
+
     const url = '/apidata/a/article/search/';
     const params = new HttpParams()
       .set('page', this.pageindex);
@@ -160,7 +163,7 @@ export class ArticleListComponent implements OnInit {
   }
 
   //页数，获取列表
-  thispage() {
+/*   thispage() {
     const url = '/apidata/a/article/search/';
     const params = new HttpParams().set('page', this.pageindex);
     const jump = this.http.get(url, { params });
@@ -171,7 +174,7 @@ export class ArticleListComponent implements OnInit {
     }, err => {
       console.log(err);
     });
-  }
+  } */
 
 
 
@@ -216,11 +219,27 @@ export class ArticleListComponent implements OnInit {
     this.endValue = null;
   }
 
-  
+
   ngOnInit() {
-    this.thispage();
+    this.pageindex='1';
+    this.getdata();
 
   }
+  ngDoCheck() {
+    //this.getdata();
+    if (this.pageindex !== this.oldPageindex) {
+      console.log(`你从${this.oldPageindex}改成${this.pageindex}`);
+      this.oldPageindex = this.pageindex;
+      this.getdata();
+    } else {
+      this.counts = this.counts + 1;
+      console.log("没有任何改变地调用了" + this.counts + "次");
+    }
 
+
+
+
+
+  }
 
 }

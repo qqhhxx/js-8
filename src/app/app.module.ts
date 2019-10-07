@@ -42,6 +42,7 @@ import { WelcomeComponent } from './components/welcome/welcome.component';
 
 
 
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -57,6 +58,7 @@ import { WelcomeComponent } from './components/welcome/welcome.component';
     MenuHeadComponent,
     AddArticleComponent,
     WelcomeComponent,
+ 
 
 
 

@@ -23,7 +23,7 @@ const routes: Routes = [
         path: 'edit/:id', component: EditComponent
       },
       {
-        path: 'add-article', component: AddArticleComponent
+        path: 'add', component: AddArticleComponent
       }
     ]
   },

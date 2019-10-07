@@ -23,7 +23,7 @@ export class LoginComponent implements OnInit {
 
   constructor(private http: HttpClient,private fb: FormBuilder) { }
 
-
+// 登录的ajax请求
   login2() {
 
     
@@ -42,7 +42,7 @@ export class LoginComponent implements OnInit {
     apiData.subscribe((val) => {
       console.log('POST call successful value returned in body',
         val);
-        window.location.href = "/article/welcome";
+        window.location.href = "/article/welcome";//如果成功就跳转到此页面
     },
     response => {
       console.log('POST call in error', response);

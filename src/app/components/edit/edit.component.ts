@@ -1,17 +1,14 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit, Renderer, ViewChild } from '@angular/core';
 import { Observable, Observer } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { HttpParams, HttpHeaders } from '@angular/common/http';
-import { ajax } from 'rxjs/ajax';
+//import { ajax } from 'rxjs/ajax';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NzIconModule } from 'ng-zorro-antd/icon';
+import * as wangEditor from '../../../../node_modules/wangeditor/release/wangEditor.js';
+import * as $ from "jquery";
 // import { type } from 'os';
-
-
-
-
-
 
 @Component({
   selector: 'app-edit',
@@ -20,9 +17,13 @@ import { NzIconModule } from 'ng-zorro-antd/icon';
 })
 export class EditComponent implements OnInit {
 
-  typelist = [{ type: '首页Banner', id: 0 }, { type: '找职位Banner', id: 1 }, { type: '找精英Banner', id: 2 }, { type: '行业大图', id: 3 }];
+  typelist = [{ type: '首页Banner', id: 0 }, { type: '找职位Banner', id: 1 }, 
+  { type: '找精英Banner', id: 2 }, { type: '行业大图', id: 3 }];
   type = '';
-  industrylist = [{ industry: '移动互联网', id: 0 }, { industry: '电子商务', id: 1 }, { industry: '企业服务', id: 2 }, { industry: 'O2O', id: 3 }, { industry: '教育', id: 4 }, { industry: '金融', id: 5 }, { industry: '游戏', id: 6 },]
+  industrylist = [{ industry: '移动互联网', id: 0 }, 
+  { industry: '电子商务', id: 1 }, { industry: '企业服务', id: 2 }, 
+  { industry: 'O2O', id: 3 }, { industry: '教育', id: 4 },
+  { industry: '金融', id: 5 }, { industry: '游戏', id: 6 },]
   industry = '';
   title = '';
   link = '';
@@ -38,16 +39,47 @@ export class EditComponent implements OnInit {
   detailData = '';
 
 
-  constructor(private router: ActivatedRoute, private route: Router) { }
+
+  /* start 富文本编辑器 */
+  public sign = 'wang_editor';
+  private editor: any;
+  /* end */
+
+  constructor(private router: ActivatedRoute, private route: Router,
+    private el: ElementRef, private renderer: Renderer, private http: HttpClient) { }
 
   ngOnInit() {
-    //展示当前id的信息包括标题名称，类型，说明等。
+
+    //初始化wangEditor
+
+    this.editor = new wangEditor('#div1', '#div2')  // 两个参数也可以传入 elem 对象，class 选择器
+    
+    this.editor.customConfig.menus = [    //配置菜单
+      'head',  // 标题
+      'bold',  // 粗体
+      'fontSize',  // 字号
+      'fontName',  // 字体
+      'italic',  // 斜体
+      'underline',  // 下划线
+      'strikeThrough',  // 删除线
+      'foreColor',  // 文字颜色
+      'backColor',  // 背景颜色
+      'link',  // 插入链接
+      'list',  // 列表
+      'justify',  // 对齐方式
+      'quote',  // 引用
+      'emoticon',  // 表情
+      'table',  // 表格
+      'undo',  // 撤销
+      'redo'  // 重复
+    ]
+    this.editor.create();
+
+
+    //获取数据，填充表单。
 
     this.getDetail();
-
-
   }
-
   //选择图片
 
   choose() {
@@ -78,9 +110,9 @@ export class EditComponent implements OnInit {
   }
   //上传图片
   postimage() {
+    const url = './apidata/a/u/img/task';
     const oData = new FormData();
     oData.append('file', this.fileToUpload);
-    const url = './apidata/a/u/img/task';
     const client = new XMLHttpRequest();
     client.open('POST', url);
     client.upload.onprogress = (e) => {
@@ -115,17 +147,7 @@ export class EditComponent implements OnInit {
     client.send(oData);
   }
 
-  getChange(e) {
-    console.log('=========');
-    console.log(e);
-
-
-  }
-
-  console(e) {
-    console.log(e);
-  }
-
+  
 
 
 
@@ -133,24 +155,24 @@ export class EditComponent implements OnInit {
   status1() {
 
 
-    const timeNow = + new Date();
+    //const timeNow = + new Date();
     const headers = new HttpHeaders().set('Content-Type', 'application/json');
     const thisurl = localStorage.getItem('key');
     const u = (this.router.params as any)._value.id;
-    console.log(this.router.params);
+  
     const url = '/apidata/a/u/article/' + u;
-    let apiData = ajax.put(url, {
+    let apiData = this.http.put(url, {
       title: this.title,
       type: this.type,
       industry: this.industry,
-      content: this.content,
+      content: this.editor.txt.html(),
       url: this.link,
       img: thisurl,
       status: '2',
       id: u,
 
 
-      author: "admin",
+     /*  author: "admin",
 
       createAt: 1568626566697,
       createBy: 2,
@@ -164,7 +186,7 @@ export class EditComponent implements OnInit {
 
       updateAt: 1568898050774,
       updateBy: 2,
-
+ */
     }, { headers });
 
     apiData.subscribe(
@@ -189,13 +211,16 @@ export class EditComponent implements OnInit {
     const u = (this.router.params as any)._value.id;
     console.log(this.router.params);
     const url = '/apidata/a/u/article/' + u;
-    const apiData = ajax.put(url, {
+    const apiData = this.http.put(url, {
       title: this.title,
-      status: '1',
-      img: thisurl,
-      // type: this.type,
+      type: this.type,
+      industry: this.industry,
+      content: this.editor.txt.html(),
       url: this.link,
-      // content: this.content,
+      img: thisurl,
+      status: '1',
+      id: u,
+      
     });
 
     apiData.subscribe(
@@ -213,20 +238,26 @@ export class EditComponent implements OnInit {
     );
   }
 
+  //取消按钮
+  return(){
+    history.back();
+  }
+
 
   //显示详情页
   getDetail() {
     const u = (this.router.params as any)._value.id;
     const url_1 = '/apidata/a/article/' + u;
-    const jump = ajax.get(url_1);
+    const jump = this.http.get(url_1);
     jump.subscribe((date: any) => {
       console.log(date);
-      this.detailData = (date as any).response.data.article;
+      this.detailData = (date as any).data.article;
       console.log(this.detailData);
       this.title = (this.detailData as any).title;
       this.type = (this.detailData as any).type;
       this.industry = (this.detailData as any).industry;
       this.content = (this.detailData as any).content;
+      this.editor.txt.html(this.content);
       this.src = (this.detailData as any).img;
       this.link = (this.detailData as any).url;
 

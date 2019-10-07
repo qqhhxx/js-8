@@ -71,11 +71,14 @@
 <div class="list">
   <div class="list-top">
     <span>article管&ensp; &ensp;&ensp; &ensp;理</span>
+    <a routerLink="../add"><button nz-button [nzSize]="size" class="add">新增
+      
+      
+    </button></a>
 
 
-    <button nz-button [nzSize]="size" class="add">
-      <a routerLink="../add-article">新增</a>
-    </button>
+    
+   
 
   </div>
   <div class="table">
@@ -128,5 +131,6 @@
 
 </div>
 
-<nz-pagination [(nzPageIndex)]="pageindex" [(nzPageSize)]="pagesize" [(nzTotal)]="total" [nzShowQuickJumper]="false"
-  (click)="getdata($event)"></nz-pagination>
+<nz-pagination [(nzPageIndex)]="pageindex" [(nzPageSize)]="pagesize" [(nzTotal)]="total" nzShowQuickJumper
+  ></nz-pagination>
+  

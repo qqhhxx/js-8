@@ -1,9 +1,14 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit, Renderer, ViewChild } from '@angular/core';
 import { Observable, Observer } from 'rxjs';
-import { ajax } from 'rxjs/ajax';
+import { HttpClient } from '@angular/common/http';
+import { HttpParams, HttpHeaders } from '@angular/common/http';
 
-import { FormGroup, FormControl } from '@angular/forms';
-import { FormBuilder } from '@angular/forms';
+import { FormsModule } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
+import { NzIconModule } from 'ng-zorro-antd/icon';
+import * as wangEditor from '../../../../node_modules/wangeditor/release/wangEditor.js';
+import * as $ from "jquery";
+// import { type } from 'os';
 
 @Component({
   selector: 'app-add-article',
@@ -11,38 +16,87 @@ import { FormBuilder } from '@angular/forms';
   styleUrls: ['./add-article.component.less']
 })
 export class AddArticleComponent implements OnInit {
-
-  editForm = this.fb.group({
-    type: [''],
-    title: [''],
-    url: ['']
-
-  });
-
-  fileToUpload: File = null;
+  typelist = [{ type: '首页Banner', id: 0 }, 
+  { type: '找职位Banner', id: 1 }, { type: '找精英Banner', id: 2 }, { type: '行业大图', id: 3 }];
+  type = '';
+  industrylist = [{ industry: '移动互联网', id: 0 }, { industry: '电子商务', id: 1 },
+   { industry: '企业服务', id: 2 }, { industry: 'O2O', id: 3 }, { industry: '教育', id: 4 }, 
+   { industry: '金融', id: 5 }, { industry: '游戏', id: 6 },]
+  industry = '';
+  title = '';
+  link = '';
+  content = '';
   size = '';
+  fileToUpload: File;
+  id: string;
   imgsrc: string;
 
+  src: string;
+  ischoosed = false;
+  isloaded = false;
+  detailData = '';
 
 
-  constructor(private fb: FormBuilder) { }
+
+  /* start 富文本编辑器 */
+  public sign = 'wang_editor';
+
+  private editor: any;
+
+
+
+
+  /* end */
+
+
+
+  constructor(private router: ActivatedRoute, private route: Router,
+    private el: ElementRef, private renderer: Renderer ,private http: HttpClient) { }
 
   ngOnInit() {
-    (<HTMLInputElement>document.querySelector('.progress-item')).style.width = '0';
+
+    //初始化wangEditor
+
+    this.editor = new wangEditor('#div1', '#div2')  // 两个参数也可以传入 elem 对象，class 选择器
+    
+    this.editor.customConfig.menus = [    //配置菜单
+      'head',  // 标题
+      'bold',  // 粗体
+      'fontSize',  // 字号
+      'fontName',  // 字体
+      'italic',  // 斜体
+      'underline',  // 下划线
+      'strikeThrough',  // 删除线
+      'foreColor',  // 文字颜色
+      'backColor',  // 背景颜色
+      'link',  // 插入链接
+      'list',  // 列表
+      'justify',  // 对齐方式
+      'quote',  // 引用
+      'emoticon',  // 表情
+      'table',  // 表格
+      'undo',  // 撤销
+      'redo'  // 重复
+    ]
+    this.editor.create();
+
+
+   
+
+
   }
 
 
 
+  //选择图片
 
   choose() {
 
-    let fileElem = document.getElementById("fileElem");
+    const fileElem = document.getElementById('fileElem');
 
     if (fileElem) {
       fileElem.click();
     }
-
-    console.log(this.editForm);
 
   }
 
@@ -51,125 +105,131 @@ export class AddArticleComponent implements OnInit {
     this.fileToUpload = $event.target.files[0];
     const reader = new FileReader();
     reader.readAsDataURL(this.fileToUpload);
-    reader.onload = function (e) {
-      const image = new Image();
-      image.src = (e.target as any).result;
-      image.id = 'preview';
-      image.style.width = '100px';
-      image.style.height = '100%';
-      image.style.marginTop = '20px';
-      const body = document.getElementById('fileinfo');
-      body.appendChild(image);
+    reader.onload = (e) => {
+      this.ischoosed = true;
+      this.src = (e.target as any).result;
+
     };
-    reader.onerror = function (e) {
-      console.log('there is an error!')
+    reader.onerror = (e) => {
+      console.log('there is an error!');
     };
 
 
   }
-
+  //上传图片
   postimage() {
-    this.imgsrc = '';
-
-
-
     const oData = new FormData();
-
-
     oData.append('file', this.fileToUpload);
     const url = './apidata/a/u/img/task';
     const client = new XMLHttpRequest();
-    client.open("POST", url);
-
-
-    client.upload.onprogress = function (e) {
+    client.open('POST', url);
+    client.upload.onprogress = (e) => {
       if (e.lengthComputable) {
-        let total: number = e.total;
-        let loaded: number = e.loaded;
-        let pct: number = loaded / total;
-        let percentage = parseFloat(pct.toFixed(2)) * 100;
-        (<HTMLInputElement>document.querySelector('.progress-item')).style.width = (percentage * 1.2) + 'px';
-        (<HTMLInputElement>document.querySelector('.progress-number')).innerHTML = percentage + '%';
-
-      }
-    }
-
-
-
-    client.onload = function (e) {
-      if (this.status == 200 || this.status == 304) {
-        console.log(this.response);
-
-        var imgsrc = JSON.parse(this.response).data.url;
-        console.log(imgsrc);
-
-        
-
-
-
-
-
-      } else {
-        console.log("err");
+        const total: number = e.total;
+        const loaded: number = e.loaded;
+        const pct: number = loaded / total;
+        const percentage = parseFloat(pct.toFixed(2)) * 100;
+        (document.querySelector('.progress-item') as any).style.width = (percentage * 1.2) + 'px';
       }
     };
 
 
+    client.onreadystatechange = (e) => {
+      if (client.readyState === 4) {
+        this.isloaded = true;
 
+      }
+    };
+
+
+    client.onload = function () {
+      if (this.status === 200 || this.status === 304) {
+        console.log(this.response);
+        const imgsrc = JSON.parse(this.responseText).data.url;
+        localStorage.setItem('key', imgsrc);
+        console.log(imgsrc);
+      } else {
+        console.log('err');
+      }
+    };
     client.send(oData);
+  }
 
-    console.log(this.imgsrc);
   
 
 
 
-
-  }
-
-
-
-  online() {
+  //立即上线按钮功能
+  status1() {
 
 
-    let url = '/apidata/a/u/article/';
+    const timeNow = + new Date();
+    const headers = new HttpHeaders().set('Content-Type', 'application/json');
+    const thisurl = localStorage.getItem('key');
+    
+    console.log(this.router.params);
+    const url = '/apidata/a/u/article/' ;
+    let apiData = this.http.post(url, {
+      title: this.title,
+      type: this.type,
+      industry: this.industry,
+      content: this.editor.txt.html(),
+      url: this.link,
+      img: thisurl,
+      status: '2',
+    
+    }, { headers });
 
-
-    let apiData = ajax.post(url, {
-
-
-      "author": "admin",
-      "content": "新增",
-      "createAt": 1561430938067,
-      //"createBy": 2,
-
-     "img": this.imgsrc,
-      "order": "",
-      "publishat": 1561709919231,
-      "source": "",
-      "status": 1,
-      "summary": "",
-      "title": "新增",
-      "type": 1,
-      "updateAt": 1561712136698,
-      "updateBy": 2,
-      "url": "我的",
-      "industry": 2
-
-
-
-    });
     apiData.subscribe(
       val => {
-        console.log("PUT call successful value returned in body",
+        console.log('PUT call successful value returned in body',
           val);
-
+        this.route.navigate(['article/articlelist']);
       },
       response => {
-        console.log("PUT call in error", response);
+        console.log('PUT call in error', response);
       },
       () => {
-        console.log("The PUT observable is now completed.");
+        console.log('The PUT observable is now completed.');
       }
     );
   }
+
+
+  //存为草稿按钮功能
+  status2() {
+    const thisurl = localStorage.getItem('key');
+    
+    console.log(this.router.params);
+    const url = '/apidata/a/u/article/' ;
+    const apiData = this.http.post(url, {
+      title: this.title,
+      type: this.type,
+      industry: this.industry,
+      content: this.editor.txt.html(),
+      url: this.link,
+      img: thisurl,
+      status: '1',
+    });
+
+    apiData.subscribe(
+      val => {
+        console.log('PUT call successful value returned in body',
+          val);
+        this.route.navigate(['article/articlelist']);
+      },
+      response => {
+        console.log('PUT call in error', response);
+      },
+      () => {
+        console.log('The PUT observable is now completed.');
+      }
+    );
+  }
+
+  //取消按钮
+  return(){
+    history.back();
+  }
+
 }
